@@ -455,7 +455,10 @@
                         </a>
                     </div>
                 </div>
-                <form class="contact-form" id="contactForm">
+                <form class="contact-form" id="contactForm" action="https://api.web3forms.com/submit" method="POST">
+                    <input type="hidden" name="access_key" value="21c28108-e253-4f76-ab32-06d6106358b9">
+                    <input type="hidden" name="subject" value="رسالة جديدة من البورتفوليو">
+                    <input type="hidden" name="from_name" value="Portfolio Contact Form">
                     <div class="form-group">
                         <label for="name">الاسم</label>
                         <input type="text" id="name" name="name" placeholder="أدخل اسمك" required>
