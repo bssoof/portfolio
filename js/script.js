@@ -207,28 +207,43 @@ revealElements.forEach(el => {
 // ================================
 const contactForm = document.getElementById('contactForm');
 
-contactForm.addEventListener('submit', (e) => {
+contactForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     
-    // Get form data
-    const formData = new FormData(contactForm);
-    const data = Object.fromEntries(formData);
-    
-    // Show success message (you can replace this with actual form submission)
     const btn = contactForm.querySelector('button[type="submit"]');
     const originalText = btn.innerHTML;
     
-    btn.innerHTML = '<i class="fas fa-check"></i> تم الإرسال بنجاح!';
-    btn.style.background = '#10b981';
+    // Show loading
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الإرسال...';
+    btn.disabled = true;
+    
+    try {
+        const formData = new FormData(contactForm);
+        const response = await fetch(contactForm.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'Accept': 'application/json'
+            }
+        });
+        
+        if (response.ok) {
+            btn.innerHTML = '<i class="fas fa-check"></i> تم الإرسال بنجاح!';
+            btn.style.background = '#10b981';
+            contactForm.reset();
+        } else {
+            throw new Error('Failed');
+        }
+    } catch (error) {
+        btn.innerHTML = '<i class="fas fa-times"></i> حدث خطأ!';
+        btn.style.background = '#ef4444';
+    }
     
     setTimeout(() => {
         btn.innerHTML = originalText;
         btn.style.background = '';
-        contactForm.reset();
+        btn.disabled = false;
     }, 3000);
-    
-    // Log form data (for testing)
-    console.log('Form submitted:', data);
 });
 
 // ================================
