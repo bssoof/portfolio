@@ -2,9 +2,11 @@
 // Loader
 // ================================
 window.addEventListener('load', () => {
+    const loader = document.getElementById('loader');
+    // Reduced delay for better UX
     setTimeout(() => {
-        document.getElementById('loader').classList.add('hidden');
-    }, 1800);
+        loader.classList.add('hidden');
+    }, 500);
 });
 
 // ================================
@@ -26,15 +28,59 @@ themeToggle.addEventListener('click', () => {
 });
 
 // ================================
-// Navbar Scroll Effect
+// Scroll Optimization (Navbar, Active Link, Back to Top)
 // ================================
 const navbar = document.getElementById('navbar');
+const backToTop = document.getElementById('backToTop');
+const sections = document.querySelectorAll('section');
+const navLinksAll = document.querySelectorAll('.nav-link');
 
-window.addEventListener('scroll', () => {
-    if (window.scrollY > 100) {
+let isScrolling = false;
+
+const handleScroll = () => {
+    const scrollY = window.scrollY;
+
+    // Navbar Effect
+    if (scrollY > 100) {
         navbar.classList.add('scrolled');
     } else {
         navbar.classList.remove('scrolled');
+    }
+
+    // Back to Top Button
+    if (scrollY > 500) {
+        backToTop.classList.add('visible');
+    } else {
+        backToTop.classList.remove('visible');
+    }
+
+    // Active Navigation Link
+    let current = '';
+    sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        // sectionHeight unused but kept if needed later
+        // const sectionHeight = section.clientHeight;
+        
+        if (scrollY >= sectionTop - 200) {
+            current = section.getAttribute('id');
+        }
+    });
+    
+    navLinksAll.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === `#${current}`) {
+            link.classList.add('active');
+        }
+    });
+
+    isScrolling = false;
+};
+
+// Throttled Scroll Event Listener
+window.addEventListener('scroll', () => {
+    if (!isScrolling) {
+        window.requestAnimationFrame(handleScroll);
+        isScrolling = true;
     }
 });
 
@@ -54,52 +100,6 @@ document.querySelectorAll('.nav-link').forEach(link => {
     link.addEventListener('click', () => {
         menuToggle.classList.remove('active');
         navLinks.classList.remove('active');
-    });
-});
-
-// ================================
-// Active Navigation Link
-// ================================
-const sections = document.querySelectorAll('section');
-const navLinksAll = document.querySelectorAll('.nav-link');
-
-window.addEventListener('scroll', () => {
-    let current = '';
-    
-    sections.forEach(section => {
-        const sectionTop = section.offsetTop;
-        const sectionHeight = section.clientHeight;
-        
-        if (scrollY >= sectionTop - 200) {
-            current = section.getAttribute('id');
-        }
-    });
-    
-    navLinksAll.forEach(link => {
-        link.classList.remove('active');
-        if (link.getAttribute('href') === `#${current}`) {
-            link.classList.add('active');
-        }
-    });
-});
-
-// ================================
-// Back to Top Button
-// ================================
-const backToTop = document.getElementById('backToTop');
-
-window.addEventListener('scroll', () => {
-    if (window.scrollY > 500) {
-        backToTop.classList.add('visible');
-    } else {
-        backToTop.classList.remove('visible');
-    }
-});
-
-backToTop.addEventListener('click', () => {
-    window.scrollTo({
-        top: 0,
-        behavior: 'smooth'
     });
 });
 
@@ -182,7 +182,7 @@ if (skillsSection) {
 // ================================
 // Scroll Reveal Animation
 // ================================
-const revealElements = document.querySelectorAll('.project-card, .info-card, .skill-item');
+const revealElements = document.querySelectorAll('.project-card, .info-card, .skill-item, .testimonial-card');
 
 const revealObserver = new IntersectionObserver((entries) => {
     entries.forEach((entry, index) => {
@@ -207,44 +207,46 @@ revealElements.forEach(el => {
 // ================================
 const contactForm = document.getElementById('contactForm');
 
-contactForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    const btn = contactForm.querySelector('button[type="submit"]');
-    const originalText = btn.innerHTML;
-    
-    // Show loading
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الإرسال...';
-    btn.disabled = true;
-    
-    try {
-        const formData = new FormData(contactForm);
-        const response = await fetch(contactForm.action, {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'Accept': 'application/json'
-            }
-        });
+if (contactForm) {
+    contactForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const btn = contactForm.querySelector('button[type="submit"]');
+        const originalText = btn.innerHTML;
+
+        // Show loading
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الإرسال...';
+        btn.disabled = true;
         
-        if (response.ok) {
-            btn.innerHTML = '<i class="fas fa-check"></i> تم الإرسال بنجاح!';
-            btn.style.background = '#10b981';
-            contactForm.reset();
-        } else {
-            throw new Error('Failed');
+        try {
+            const formData = new FormData(contactForm);
+            const response = await fetch(contactForm.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                btn.innerHTML = '<i class="fas fa-check"></i> تم الإرسال بنجاح!';
+                btn.style.background = '#10b981';
+                contactForm.reset();
+            } else {
+                throw new Error('Failed');
+            }
+        } catch (error) {
+            btn.innerHTML = '<i class="fas fa-times"></i> حدث خطأ!';
+            btn.style.background = '#ef4444';
         }
-    } catch (error) {
-        btn.innerHTML = '<i class="fas fa-times"></i> حدث خطأ!';
-        btn.style.background = '#ef4444';
-    }
-    
-    setTimeout(() => {
-        btn.innerHTML = originalText;
-        btn.style.background = '';
-        btn.disabled = false;
-    }, 3000);
-});
+
+        setTimeout(() => {
+            btn.innerHTML = originalText;
+            btn.style.background = '';
+            btn.disabled = false;
+        }, 3000);
+    });
+}
 
 // ================================
 // Smooth Scroll for Anchor Links
@@ -264,35 +266,24 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 });
 
 // ================================
-// Typing Effect (Optional)
+// Parallax Effect for Hero Shapes (Throttled)
 // ================================
-const typeWriter = (element, text, speed = 100) => {
-    let i = 0;
-    element.textContent = '';
-    
-    const type = () => {
-        if (i < text.length) {
-            element.textContent += text.charAt(i);
-            i++;
-            setTimeout(type, speed);
-        }
-    };
-    
-    type();
-};
-
-// ================================
-// Parallax Effect for Hero Shapes
-// ================================
+let isMouseMove = false;
 window.addEventListener('mousemove', (e) => {
-    const shapes = document.querySelectorAll('.hero-shape');
-    const x = e.clientX / window.innerWidth;
-    const y = e.clientY / window.innerHeight;
-    
-    shapes.forEach((shape, index) => {
-        const speed = (index + 1) * 20;
-        shape.style.transform = `translate(${x * speed}px, ${y * speed}px)`;
-    });
+    if (!isMouseMove) {
+        window.requestAnimationFrame(() => {
+            const shapes = document.querySelectorAll('.hero-shape');
+            const x = e.clientX / window.innerWidth;
+            const y = e.clientY / window.innerHeight;
+
+            shapes.forEach((shape, index) => {
+                const speed = (index + 1) * 20;
+                shape.style.transform = `translate(${x * speed}px, ${y * speed}px)`;
+            });
+            isMouseMove = false;
+        });
+        isMouseMove = true;
+    }
 });
 
 // ================================
