@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="bssoof favicon">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f97316"/>
+      <stop offset="100%" stop-color="#0f766e"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="#fff3e5"/>
+  <circle cx="44" cy="46" r="9" fill="url(#g)"/>
+  <path d="M18 14h15c8 0 13 5 13 11 0 5-3 8-6 10 5 2 8 6 8 12 0 9-7 15-18 15H18V14zm11 19c4 0 7-2 7-5s-2-5-7-5h-2v10h2zm1 20c6 0 9-3 9-7s-3-7-9-7h-3v14h3z" fill="#1f2430"/>
+</svg>
